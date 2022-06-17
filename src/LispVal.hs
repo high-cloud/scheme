@@ -13,8 +13,7 @@ import qualified Data.Text as T
 import qualified Data.Map as Map
 
 import Control.Exception ( Exception )
-import Control.Monad.Reader
-    ( MonadIO, MonadReader, ReaderT(ReaderT) )
+import Control.Monad.State
 
 type ValCtx = Map.Map T.Text LispVal
 type FnCtx  = Map.Map T.Text LispVal
@@ -25,8 +24,8 @@ data EnvCtx = EnvCtx
   , fenv :: FnCtx
   } deriving (Eq)
 
-newtype Eval a = Eval { unEval :: ReaderT EnvCtx IO a }
-  deriving (Monad, Functor, Applicative, MonadReader EnvCtx, MonadIO)
+newtype Eval a = Eval { unEval :: StateT EnvCtx IO a }
+  deriving (Monad, Functor, Applicative, MonadState EnvCtx, MonadIO)
 
 data LispVal
   = Atom T.Text
@@ -42,7 +41,7 @@ data LispVal
 instance Show LispVal where
   show = T.unpack . showVal
 
-data IFunc = IFunc { fn :: [LispVal] -> Eval LispVal }
+newtype IFunc = IFunc { fn :: [LispVal] -> Eval LispVal }
 
 instance Eq IFunc where
  (==) _ _ = False

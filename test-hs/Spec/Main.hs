@@ -15,10 +15,12 @@ import qualified Data.Text as T
 
 import Test.Hspec ( hspec, describe, it, shouldBe, SpecWith )
 import System.IO.Unsafe ( unsafePerformIO )
+import System.IO
 
 
 main :: IO ()
 main = do
+  hSetEncoding stderr utf8
   hspec $ describe "src/Parser.hs" $ do
 
     it "Atom" $
